@@ -1,8 +1,6 @@
 package main
 
 import (
-	"time"
-
 	"tinygo.org/x/bluetooth"
 )
 
@@ -14,18 +12,15 @@ func main() {
 	switch {
 
 	case test == 1:
-		adv := adapter.DefaultAdvertisement()
-		must("config adv", adv.Configure(bluetooth.AdvertisementOptions{
-			LocalName: "Go Bluetooth",
-		}))
-		must("start adv", adv.Start())
+		println("scanning...")
+		err := adapter.Scan(func(adapter *bluetooth.Adapter, device bluetooth.ScanResult) {
+			if len(device.LocalName()) > 0 {
+				println("found device:", device.Address.String(), device.RSSI, device.LocalName())
+			}
+		})
 
-		println("advertising...")
-		address, _ := adapter.Address()
-		for {
-			println("Go Bluetooth /", address.MAC.String())
-			time.Sleep(time.Second)
-		}
+		must("start scan", err)
+
 	case test == 0:
 		println("scanning...")
 		err := adapter.Scan(func(adapter *bluetooth.Adapter, device bluetooth.ScanResult) {
