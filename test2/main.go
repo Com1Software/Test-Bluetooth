@@ -1,12 +1,43 @@
 package main
 
 import (
+	"os"
 	"strconv"
+	"time"
 
 	"tinygo.org/x/bluetooth"
 )
 
 var adapter = bluetooth.DefaultAdapter
+var DeviceAddress string
+
+func connectAddress() string {
+	if len(os.Args) < 2 {
+		println("usage: discover [address]")
+		os.Exit(1)
+	}
+
+	// look for device with specific name
+	address := os.Args[1]
+
+	return address
+}
+
+//func connectAddress() string {
+//	return DeviceAddress
+//}
+
+// wait on baremetal, proceed immediately on desktop OS.
+func wait() {
+	time.Sleep(3 * time.Second)
+}
+
+// done just blocks forever, allows USB CDC reset for flashing new software.
+func done() {
+	println("Done.")
+
+	time.Sleep(1 * time.Hour)
+}
 
 func main() {
 	wait()
