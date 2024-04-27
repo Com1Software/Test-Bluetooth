@@ -16,23 +16,14 @@ func connectAddress() string {
 		println("usage: discover [address]")
 		os.Exit(1)
 	}
-
-	// look for device with specific name
 	address := os.Args[1]
-
 	return address
 }
 
-//func connectAddress() string {
-//	return DeviceAddress
-//}
-
-// wait on baremetal, proceed immediately on desktop OS.
 func wait() {
 	time.Sleep(3 * time.Second)
 }
 
-// done just blocks forever, allows USB CDC reset for flashing new software.
 func done() {
 	println("Done.")
 
@@ -43,13 +34,9 @@ func main() {
 	wait()
 
 	println("enabling")
-
-	// Enable BLE interface.
 	must("enable BLE stack", adapter.Enable())
-
 	ch := make(chan bluetooth.ScanResult, 1)
 
-	// Start scanning.
 	println("scanning...")
 	err := adapter.Scan(func(adapter *bluetooth.Adapter, result bluetooth.ScanResult) {
 		println("found device:", result.Address.String(), result.RSSI, result.LocalName())
@@ -71,17 +58,13 @@ func main() {
 		println("connected to ", result.Address.String())
 	}
 
-	// get services
 	println("discovering services/characteristics")
 	srvcs, err := device.DiscoverServices(nil)
+
 	must("discover services", err)
-
-	// buffer to retrieve characteristic data
 	buf := make([]byte, 255)
-
 	for _, srvc := range srvcs {
 		println("- service", srvc.UUID().String())
-
 		chars, err := srvc.DiscoverCharacteristics(nil)
 		if err != nil {
 			println(err)
